@@ -1,0 +1,1 @@
+docker run --rm -v $(pwd):/temp -it apache/spark /opt/spark/bin/pyspark
