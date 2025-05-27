@@ -1,0 +1,61 @@
+services:
+
+  websocket-server:
+    build:
+      context: ./server
+    container_name: websocket-server
+    ports:
+      - "8765:8765"
+    networks:
+      - spark-net
+
+  websocat:
+    build:
+      context: ./websocat
+    container_name: websocket-to-tcp
+    depends_on:
+      - websocket-server
+    command: >
+      sh -c "websocat --text tcp-l:0.0.0.0:9999 ws://websocket-server:8765"    ports:
+      - "9999:9999"
+    networks:
+      - spark-net
+
+  ana:
+      build:
+        context: ./emissor
+      container_name: usuario_ana
+      environment:
+        - NOME_USUARIO=Ana
+      depends_on:
+        - websocket-server
+      networks:
+        - spark-net
+
+  bruno:
+    build:
+      context: ./emissor
+    container_name: usuario_bruno
+    environment:
+      - NOME_USUARIO=Bruno
+    depends_on:
+      - websocket-server
+    networks:
+      - spark-net
+
+  carlos:
+    build:
+      context: ./emissor
+    container_name: usuario_carlos
+    environment:
+      - NOME_USUARIO=Carlos
+    depends_on:
+      - websocket-server
+    networks:
+      - spark-net
+
+networks:
+  spark-net:
+    name: gab_spark-net
+    driver: bridge
+    external: true
